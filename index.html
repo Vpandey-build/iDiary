@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>iDiary</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#bdf1e9">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--bg:#bdf1e9;--navy:#054560;--ink:#27394a;--lab:#0b5a75;--line:#9db9bd;--yel:#f6d93a;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+main{max-width:560px;margin:0 auto;padding:10px 16px 60px}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0 12px;border-bottom:1px solid #a4d9d1}
+h1{margin:0;font:700 1.7rem Georgia,"Roboto Slab",serif;color:var(--ink)}
+.hb{display:flex;gap:8px}
+.btn{font:inherit;font-size:.88rem;font-weight:600;background:var(--navy);color:#fff;border:0;border-radius:10px;padding:9px 12px;cursor:pointer}
+.btn.o{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.row2{display:flex;align-items:center;justify-content:center;gap:8px;margin:14px 0 6px}
+.dt{flex:1;max-width:230px;font:inherit;font-size:1.05rem;padding:10px;border:2px solid var(--navy);border-radius:10px;background:#fff;color:#111;text-align:center}
+.mt{flex:1;max-width:230px;text-align:center;font-size:1.1rem;font-weight:600;color:var(--navy)}
+.ar{width:40px;height:40px;border-radius:50%;border:0;background:var(--navy);color:#fff;font-size:1.4rem;line-height:1;cursor:pointer;flex:none}
+.ar:disabled{opacity:.35;cursor:default}
+.sub{display:flex;justify-content:space-between;align-items:center;margin:8px 2px 12px;font-size:.88rem;color:var(--lab)}
+.tabs{display:flex;border:2px solid var(--navy);border-radius:30px;overflow:hidden;margin:10px 0 8px}
+.tabs button{flex:1;font:inherit;font-weight:600;padding:12px;border:0;background:transparent;color:var(--navy);cursor:pointer}
+.tabs button.on{background:var(--navy);color:#fff}
+.g{border-top:1px solid var(--line)}
+.gr{display:flex;align-items:center;gap:14px;padding:12px 6px;cursor:pointer}
+.ic{width:46px;height:46px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+.ic svg{width:26px;height:26px}
+.gt{flex:1;font-size:1.1rem}
+.bd{min-width:26px;text-align:center;background:var(--navy);color:#fff;border-radius:13px;font-size:.8rem;padding:2px 8px}
+.bd:empty{display:none}
+.ch svg{width:18px;height:18px;fill:none;stroke:#6b7a9a;stroke-width:2.5;transition:transform .15s;display:block}
+.ch.op svg{transform:rotate(90deg)}
+.cn{padding:6px 6px 14px 10px}
+.cr{display:flex;align-items:center;gap:12px;margin:8px 0}
+.rb{width:40px;height:40px;border-radius:50%;border:0;background:var(--navy);color:#fff;font-size:1.5rem;line-height:1;cursor:pointer;flex:none}
+.nb{width:84px;height:42px;font:inherit;font-size:1.1rem;padding:0 10px;border:2px solid #111;background:#fff;color:#111;border-radius:0}
+.cl{color:var(--lab)}
+.hide{display:none}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.cd{background:#fff;border-radius:12px;padding:10px 12px}
+.cd b{display:block;font-size:1.4rem;color:var(--navy)}
+.cd small{font-size:.9rem;font-weight:400}
+.cd span{font-size:.8rem;color:var(--lab)}
+h2{font-size:1rem;margin:18px 0 6px;color:var(--navy)}
+.br{padding:6px 0}
+.br .t{display:flex;justify-content:space-between;gap:8px;font-size:.92rem;margin-bottom:3px}
+.tk{height:9px;background:#fff;border-radius:5px;overflow:hidden}
+.tk i{display:block;height:100%;background:var(--navy);border-radius:5px}
+.chart{display:flex;align-items:flex-end;gap:2px;height:90px;background:#fff;border-radius:12px;padding:8px}
+.chart i{flex:1;background:var(--navy);border-radius:2px 2px 0 0}
+.chart i.nl{background:var(--line);opacity:.6}
+.ax{display:flex;justify-content:space-between;font-size:.72rem;color:var(--lab);margin:3px 4px}
+.note{font-size:.8rem;color:var(--lab);margin:6px 0}
+.gd{color:#17794a;font-weight:600}.bad{color:#b3261e;font-weight:600}
+input:focus-visible,button:focus-visible,[role=button]:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+<div class="hd"><h1>iDiary</h1><div class="hb"><button class="btn o" id="bk">Backup</button><button class="btn" id="rs">Restore Backup</button></div></div>
+<input type="file" id="file" accept="application/json" class="hide">
+<div class="tabs"><button id="tv" class="on">Virtues</button><button id="tt">Trends</button></div>
+<div id="pv">
+<div class="row2"><button class="ar" id="dP" aria-label="Previous day">‹</button><input type="date" class="dt" id="dIn" aria-label="Pick a date"><button class="ar" id="dN" aria-label="Next day">›</button></div>
+<div class="sub"><button class="btn o" id="eC">Export month CSV</button><span id="sv">Auto-save on</span></div>
+<div id="vl"></div>
+</div>
+<div id="pt" class="hide"></div>
+</main>
+<script>
+var G=[
+{id:"a",t:"Ahimsa (Non-Violence)",ic:"heart",c:[["t","In Thought"],["w","In Word"],["d","In Deed"]]},
+{id:"t",t:"Truthfulness",ic:"eye",c:[["f","Falsehood"],["d","Deceit"],["h","Hypocrisy"]]},
+{id:"p",t:"Purity",ic:"drop",c:[["t","In Thought"],["w","In Word"],["d","In Deed"]]},
+{id:"h",t:"Humility",ic:"person",c:[["w","Pride Of Wealth"],["k","Vanity Of Knowledge"],["p","Intoxication Of Power"]]},
+{id:"d",t:"Diet",ic:"leaf",c:[["f","Wrong Food"],["d","Drugs"],["a","Alcohol"]]},
+{id:"s",t:"Selfless Service",ic:"hand",good:1,c:[["p","Physically"],["f","Financially"]]},
+{id:"m",t:"Time Devoted To (In Minutes)",ic:"clock",good:1,min:1,c:[["s","Selfless Service"],["i","Simran (Watching)"],["b","Bhajan (Sound Current)"]]}];
+var Y="#f6d93a",N="#054560";
+var IC={
+heart:'<svg viewBox="0 0 24 24"><path d="M12 21S3 15.5 3 9.5A4.6 4.6 0 0 1 12 7.4 4.6 4.6 0 0 1 21 9.5C21 15.5 12 21 12 21z" fill="'+Y+'"/><path d="M12 16.5S7.5 13.7 7.5 10.8a2.3 2.3 0 0 1 4.5-.7 2.3 2.3 0 0 1 4.5.7c0 2.9-4.5 5.7-4.5 5.7z" fill="'+N+'"/></svg>',
+eye:'<svg viewBox="0 0 24 24"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7S18.5 19 12 19 1.5 12 1.5 12z" fill="'+N+'"/><circle cx="12" cy="12" r="4.2" fill="'+Y+'"/></svg>',
+drop:'<svg viewBox="0 0 24 24"><path d="M12 2.5c4.5 5.5 6.5 8.5 6.5 11.7a6.5 6.5 0 0 1-13 0C5.5 11 7.5 8 12 2.5z" fill="'+Y+'"/><path d="M12 8c2.5 3.2 3.5 5 3.5 6.5a3.5 3.5 0 0 1-7 0C8.5 13 9.5 11.2 12 8z" fill="'+N+'"/></svg>',
+person:'<svg viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="4.2" fill="'+Y+'"/><path d="M4 21a8 8 0 0 1 16 0z" fill="'+N+'"/></svg>',
+leaf:'<svg viewBox="0 0 24 24"><path d="M4.5 19.5C4 9.5 10 4 20 4c0 10-5.5 15.5-15.5 15.5z" fill="'+Y+'"/><path d="M4.5 19.5C8 14 11 11 15 8.5" fill="none" stroke="'+N+'" stroke-width="2" stroke-linecap="round"/></svg>',
+hand:'<svg viewBox="0 0 24 24"><path d="M12 11S7.5 8.3 7.5 5.8A2.2 2.2 0 0 1 12 5.2a2.2 2.2 0 0 1 4.5.6C16.5 8.3 12 11 12 11z" fill="'+Y+'"/><path d="M2.5 17.5l4.5-2.5 5 .8 6.5-3.5 1.5 2.3-8 5.7-9.5-.8z" fill="'+N+'"/></svg>',
+clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="'+N+'"/><path d="M12 6v6l4 2.5" fill="none" stroke="'+Y+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'};
+var CH='<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var KEY="idiary-data",DATA={};
+try{DATA=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}
+function $(id){return document.getElementById(id)}
+function z(n){return("0"+n).slice(-2)}
+function ymd(y,m,d){return y+"-"+z(m+1)+"-"+z(d)}
+function ld(d){return ymd(d.getFullYear(),d.getMonth(),d.getDate())}
+var TD=ld(new Date()),VD=TD,OPEN=null,TY=+TD.slice(0,4),TM=+TD.slice(5,7)-1;
+function lim(g){return g.min?1440:999}
+function tot(e,g){var n=0;g.c.forEach(function(c){n+=e[g.id+"_"+c[0]]||0});return n}
+function gOf(id){return G.filter(function(g){return g.id===id})[0]}
+var svT;
+function persist(){var ok=true;try{localStorage.setItem(KEY,JSON.stringify(DATA))}catch(e){ok=false}
+var s=$("sv");s.textContent=ok?"✓ Saved":"⚠ Not saved";clearTimeout(svT);svT=setTimeout(function(){s.textContent="Auto-save on"},1800)}
+function setv(k,v){var g=gOf(k.split("_")[0]);v=Math.max(0,Math.min(lim(g),v||0));
+if(!DATA[VD])DATA[VD]={};DATA[VD][k]=v;persist();
+var b=$("b-"+g.id);if(b)b.textContent=tot(DATA[VD],g)||"";return v}
+function rv(){
+var e=DATA[VD]||{},h="";
+G.forEach(function(g){
+var op=OPEN===g.id;
+h+='<div class="g"><div class="gr" data-g="'+g.id+'" role="button" tabindex="0" aria-expanded="'+op+'"><span class="ic">'+IC[g.ic]+'</span><span class="gt">'+g.t+'</span><span class="bd" id="b-'+g.id+'">'+(tot(e,g)||"")+'</span><span class="ch'+(op?' op':'')+'">'+CH+'</span></div>';
+if(op){h+='<div class="cn">';g.c.forEach(function(c){var k=g.id+"_"+c[0];
+h+='<div class="cr"><button class="rb" data-o="-1" data-k="'+k+'" aria-label="Decrease '+c[1]+'">−</button><input class="nb" inputmode="numeric" data-k="'+k+'" value="'+(e[k]||0)+'" aria-label="'+c[1]+'"><button class="rb" data-o="1" data-k="'+k+'" aria-label="Increase '+c[1]+'">+</button><span class="cl">'+c[1]+'</span></div>'});h+='</div>'}
+h+='</div>'});
+$("vl").innerHTML=h}
+$("vl").addEventListener("click",function(e){
+var gr=e.target.closest("[data-g]");
+if(gr){var id=gr.getAttribute("data-g");OPEN=OPEN===id?null:id;rv();var el=document.querySelector('[data-g="'+id+'"]');if(el&&el.scrollIntoView)el.scrollIntoView({block:"nearest"});return}
+var b=e.target.closest("[data-o]");
+if(b){var k=b.getAttribute("data-k"),v=setv(k,((DATA[VD]&&DATA[VD][k])||0)+parseInt(b.getAttribute("data-o"),10));var inp=document.querySelector('input[data-k="'+k+'"]');if(inp)inp.value=v}});
+$("vl").addEventListener("keydown",function(e){if(e.key==="Enter"&&e.target.hasAttribute("data-g"))e.target.click()});
+$("vl").addEventListener("input",function(e){var t=e.target;if(!t.classList.contains("nb"))return;
+var s=t.value.replace(/\D/g,"").slice(0,4);if(s!==t.value)t.value=s;
+var v=setv(t.getAttribute("data-k"),s===""?0:parseInt(s,10));if(s!==""&&String(v)!==s)t.value=v});
+$("vl").addEventListener("focusin",function(e){if(e.target.classList.contains("nb"))e.target.select()});
+$("vl").addEventListener("focusout",function(e){var t=e.target;if(t.classList.contains("nb"))t.value=(DATA[VD]&&DATA[VD][t.getAttribute("data-k")])||0});
+function addD(d,n){var x=new Date(d+"T00:00:00");x.setDate(x.getDate()+n);return ld(x)}
+function navU(){$("dIn").value=VD;$("dIn").max=TD;$("dN").disabled=VD>=TD}
+function go(d){if(!d)return;if(d>TD)d=TD;VD=d;navU();rv()}
+$("dP").onclick=function(){go(addD(VD,-1))};
+$("dN").onclick=function(){go(addD(VD,1))};
+$("dIn").onchange=function(){go(this.value)};
+function agg(y,m){var dim=new Date(y,m+1,0).getDate(),r={days:0,g:{},c:{},lap:0,min:0,daily:[],dim:dim};
+G.forEach(function(g){r.g[g.id]=0;g.c.forEach(function(c){r.c[g.id+"_"+c[0]]=0})});
+for(var d=1;d<=dim;d++){var e=DATA[ymd(y,m,d)],dl=0;
+if(e){r.days++;G.forEach(function(g){var n=tot(e,g);r.g[g.id]+=n;g.c.forEach(function(c){r.c[g.id+"_"+c[0]]+=e[g.id+"_"+c[0]]||0});if(g.min)r.min+=n;else if(!g.good){r.lap+=n;dl+=n}})}
+r.daily.push(e?dl:-1)}
+return r}
+function dt(cur,prev,good,pl){if(!pl)return"";var d=cur-prev;if(!d)return"<span>–</span>";return'<span class="'+((good?d>0:d<0)?"gd":"bad")+'">'+(d>0?"↑":"↓")+Math.abs(d)+"</span>"}
+function mn(y,m,o){return new Date(y,m,1).toLocaleDateString(undefined,o)}
+function rt(){
+var cur=agg(TY,TM),pm=TM?[TY,TM-1]:[TY-1,11],pv=agg(pm[0],pm[1]),pn=mn(pm[0],pm[1],{month:"short"});
+var atNow=TY===+TD.slice(0,4)&&TM===+TD.slice(5,7)-1;
+var h='<div class="row2"><button class="ar" id="tP" aria-label="Previous month">‹</button><div class="mt">'+mn(TY,TM,{month:"long",year:"numeric"})+'</div><button class="ar" id="tN" aria-label="Next month"'+(atNow?" disabled":"")+'>›</button></div>';
+h+='<div class="sub"><button class="btn o" id="tE">Export month CSV</button></div>';
+h+='<div class="cards"><div class="cd"><b>'+cur.days+'<small>/'+cur.dim+'</small></b><span>Days logged</span></div>'
++'<div class="cd"><b>'+cur.lap+'</b><span>Lapses '+dt(cur.lap,pv.lap,0,pv.days)+' vs '+pn+'</span></div>'
++'<div class="cd"><b>'+(cur.days?(cur.lap/cur.days).toFixed(1):"–")+'</b><span>Lapses per logged day</span></div>'
++'<div class="cd"><b>'+cur.min+'</b><span>Minutes '+dt(cur.min,pv.min,1,pv.days)+' vs '+pn+'</span></div></div>';
+var mx=1;G.forEach(function(g){if(!g.min)mx=Math.max(mx,cur.g[g.id])});
+h+="<h2>By virtue</h2>";
+G.forEach(function(g){if(g.min)return;var v=cur.g[g.id];h+='<div class="br"><div class="t"><span>'+g.t+'</span><span>'+v+" "+dt(v,pv.g[g.id],g.good,pv.days)+'</span></div><div class="tk"><i style="width:'+v/mx*100+'%"></i></div></div>'});
+h+='<p class="note">Lower is better, except Selfless Service where higher is better. Arrows compare with '+pn+".</p>";
+var mg=gOf("m"),mm=1;mg.c.forEach(function(c){mm=Math.max(mm,cur.c["m_"+c[0]])});
+h+="<h2>Time devoted (minutes)</h2>";
+mg.c.forEach(function(c){var k="m_"+c[0],v=cur.c[k];h+='<div class="br"><div class="t"><span>'+c[1]+'</span><span>'+v+" "+dt(v,pv.c[k],1,pv.days)+(cur.days?" · avg "+Math.round(v/cur.days)+"/day":"")+'</span></div><div class="tk"><i style="width:'+v/mm*100+'%"></i></div></div>'});
+var dm=Math.max.apply(null,cur.daily.concat([1]));
+h+="<h2>Daily lapses</h2><div class=\"chart\">"+cur.daily.map(function(v){return v<0?'<i class="nl" style="height:3px"></i>':'<i style="height:'+Math.max(4,v/dm*100)+'%"></i>'}).join("")+'</div><div class="ax"><span>1</span><span>'+Math.ceil(cur.dim/2)+"</span><span>"+cur.dim+"</span></div>";
+var six=[],sm=1;
+for(var i=5;i>=0;i--){var d=new Date(TY,TM-i,1),a=agg(d.getFullYear(),d.getMonth());six.push([mn(d.getFullYear(),d.getMonth(),{month:"short"}),a.lap]);sm=Math.max(sm,a.lap)}
+h+="<h2>Last 6 months (lapses)</h2><div class=\"chart\">"+six.map(function(s){return'<i style="height:'+Math.max(4,s[1]/sm*100)+'%" title="'+s[1]+'"></i>'}).join("")+'</div><div class="ax">'+six.map(function(s){return"<span>"+s[0]+" "+s[1]+"</span>"}).join("")+"</div>";
+$("pt").innerHTML=h}
+$("pt").addEventListener("click",function(e){var id=e.target.id;
+if(id==="tP"){TM--;if(TM<0){TM=11;TY--}rt()}
+if(id==="tN"&&!e.target.disabled){TM++;if(TM>11){TM=0;TY++}rt()}
+if(id==="tE")csv(TY,TM)});
+function tab(t){$("pv").classList.toggle("hide",t!=="v");$("pt").classList.toggle("hide",t!=="t");$("tv").classList.toggle("on",t==="v");$("tt").classList.toggle("on",t==="t");if(t==="t")rt();else rv()}
+$("tv").onclick=function(){tab("v")};
+$("tt").onclick=function(){tab("t")};
+var DL=null;
+try{if(window.claude&&claude.use)claude.use("downloads").then(function(d){DL=d},function(){})}catch(e){}
+function dl(name,data,type){
+if(DL){DL.save({filename:name,data:data}).catch(function(){});return}
+var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type:type}));a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},500)}
+function q(s){s=String(s);return/[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
+function csv(y,m){
+var head=["Date"],keys=[];
+G.forEach(function(g){g.c.forEach(function(c){head.push(g.t+" - "+c[1]);keys.push(g.id+"_"+c[0])})});
+head.push("Total lapses","Total minutes");
+var rows=[head],dim=new Date(y,m+1,0).getDate();
+for(var d=1;d<=dim;d++){var k=ymd(y,m,d),e=DATA[k],r=[k];
+if(e){var lap=0,mi=0;keys.forEach(function(x){r.push(e[x]||0)});G.forEach(function(g){var n=tot(e,g);if(g.min)mi+=n;else if(!g.good)lap+=n});r.push(lap,mi)}
+else{keys.forEach(function(){r.push("")});r.push("","")}
+rows.push(r)}
+dl("idiary-"+y+"-"+z(m+1)+".csv","\ufeff"+rows.map(function(r){return r.map(q).join(",")}).join("\r\n"),"text/csv")}
+$("eC").onclick=function(){csv(+VD.slice(0,4),+VD.slice(5,7)-1)};
+$("bk").onclick=function(){dl("idiary-backup-"+TD+".json",JSON.stringify({app:"idiary",v:1,entries:DATA},null,1),"application/json")};
+function clean(p){
+if(!p||p.app!=="idiary"||!p.entries||typeof p.entries!=="object")return null;
+var out={},n=0;
+Object.keys(p.entries).forEach(function(d){
+if(!/^\d{4}-\d{2}-\d{2}$/.test(d))return;
+var s=p.entries[d],o={},any=false;if(!s||typeof s!=="object")return;
+G.forEach(function(g){g.c.forEach(function(c){var k=g.id+"_"+c[0],v=parseInt(s[k],10);if(isFinite(v)&&v>=0){o[k]=Math.min(v,lim(g));any=true}})});
+if(any){out[d]=o;n++}});
+return{e:out,n:n}}
+$("rs").onclick=function(){$("file").click()};
+$("file").onchange=function(ev){
+var f=ev.target.files[0];if(!f)return;var r=new FileReader();
+r.onload=function(){var c=null;try{c=clean(JSON.parse(r.result))}catch(x){}
+if(!c||!c.n){alert("That file isn’t a valid iDiary backup.");return}
+if(confirm("Restore "+c.n+" days from this backup? Days in the backup replace the same days here. Other days stay as they are.")){
+Object.keys(c.e).forEach(function(d){DATA[d]=c.e[d]});persist();rv();if(!$("pt").classList.contains("hide"))rt()}};
+r.readAsText(f);ev.target.value=""};
+document.addEventListener("visibilitychange",function(){
+if(document.hidden)return;var t=ld(new Date());
+if(t!==TD){var wasToday=VD===TD;TD=t;if(wasToday)VD=t;navU();rv()}});
+navU();rv();
+try{if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0)navigator.serviceWorker.register("sw.js").catch(function(){})}catch(e){}
+</script>
+</body>
+</html>
